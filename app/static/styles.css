@@ -16,6 +16,7 @@ body {
 
 .message {
   display: flex;
+  align-items: center;
   margin-bottom: 10px;
 }
 
@@ -23,6 +24,19 @@ body {
   background-color: #d1f7c4;
   align-self: flex-end;
 }
+
+.message .logo {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.message.user .logo {
+  margin-left: 10px;
+  margin-right: 0;
+}
+
 
 .message.response .message-content {
   background-color: #e2e2e2;

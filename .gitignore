@@ -1,0 +1,8 @@
+# Ignore the .env file
+.env
+
+*.pyc
+__pycache__/
+*.db
+*.sqlite3
+*.log
