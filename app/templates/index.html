@@ -1,28 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modern Chat App</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
-</head>
-<body>
-  <div class="container">
-    <div class="chat-container" id="chat-container">
-      <!-- Messages will be appended here -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern Chat App</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='styles.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="chat-container" id="chat-container">
+        <!-- Messages will be appended here -->
+      </div>
+      <div class="input-container">
+        <input
+          type="text"
+          id="message-input"
+          class="form-control"
+          placeholder="Type your message..."
+        />
+        <button id="send-button" class="btn btn-primary">Send</button>
+      </div>
     </div>
-    <div class="input-container">
-      <input type="text" id="message-input" class="form-control" placeholder="Type your message...">
-      <button id="send-button" class="btn btn-primary">Send</button>
-    </div>
-  </div>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 
-  <!-- Bootstrap and jQuery JavaScript -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
-</body>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <!-- Highlight.js CSS and JS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        // These URLs are rendered on the server side and passed to the JavaScript
+        const userLogo = "{{ url_for('static', filename='images/user.png') }}";
+        const systemLogo = "{{ url_for('static', filename='images/gpt.jpg') }}";
+
+        $("#send-button").click(function () {
+          sendMessage();
+        });
+
+        $("#message-input").keypress(function (event) {
+          if (event.which === 13) {
+            event.preventDefault();
+            sendMessage();
+          }
+        });
+
+        function sendMessage() {
+          const message = $("#message-input").val().trim();
+          if (message === "") {
+            return;
+          }
+
+          appendMessage(message, "user", userLogo);
+
+          $.ajax({
+            url: "/api",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ message: message }),
+            success: function (response) {
+              appendMessage(response, "response", systemLogo);
+            },
+            error: function () {
+              appendMessage(
+                "Error: Failed to send the message.",
+                "response",
+                systemLogo
+              );
+            },
+          });
+
+          $("#message-input").val("");
+        }
+
+        function appendMessage(text, type, logo) {
+          const messageHtml = `
+    <div class="message ${type}">
+      <img src="${logo}" alt="${type} logo" class="logo" />
+      <div class="message-content">${text}</div>
+    </div>
+  `;
+
+          $("#chat-container").append(messageHtml);
+          $("#chat-container").scrollTop($("#chat-container")[0].scrollHeight);
+        }
+      });
+    </script>
+  </body>
 </html>
