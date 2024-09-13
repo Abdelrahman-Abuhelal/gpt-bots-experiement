@@ -13,15 +13,14 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 def index():
     return render_template("./index.html")
 
-
-@main.route("/api", methods=["POST"])
-def api():
+@main.route("/api/<chatbot_id>", methods=["POST"])
+def api(chatbot_id):
     message = request.json.get("message")
 
-    # Store the question
-    new_message = ChatMessage(question=message, response="")
-    db.session.add(new_message)
-    db.session.commit()
+    if chatbot_id == 'chatbot2':
+        new_message = ChatMessage(question=message, response="")
+        db.session.add(new_message)
+        db.session.commit()
 
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -29,13 +28,14 @@ def api():
         temperature=0.7,
         max_tokens=64,
         top_p=1,
-    )
+        )
 
     if completion.choices and completion.choices[0].message:
         response_content = completion.choices[0].message.content
 
-        new_message.response = response_content
-        db.session.commit()
+        if chatbot_id == 'chatbot2':
+            new_message.response = response_content
+            db.session.commit()
 
         return response_content
     else:

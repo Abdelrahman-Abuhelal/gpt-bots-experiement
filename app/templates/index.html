@@ -17,9 +17,23 @@
   </head>
   <body>
     <div class="container">
-      <div class="chat-container" id="chat-container">
-        <!-- Messages will be appended here -->
-      </div>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-chatbot="chatbot1">Normal</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-chatbot="chatbot2">With Storage</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-chatbot="chatbot3">Talk With DB</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="chat-container" id="chat-container"></div>
       <div class="input-container">
         <input
           type="text"
@@ -39,21 +53,33 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
-    <!-- Highlight.js CSS and JS -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 
-    <!-- Marked.js for Markdown parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
 
     <script>
       $(document).ready(function () {
-        // These URLs are rendered on the server side and passed to the JavaScript
-        const userLogo = "{{ url_for('static', filename='images/user.png') }}";
-        const systemLogo = "{{ url_for('static', filename='images/gpt.jpg') }}";
+        let apiUrl = "/api/chatbot1";
+        let activeChatbot = "chatbot1"; 
+        const chatHistories = {
+          chatbot1: [],
+          chatbot2: [],
+          chatbot3: [],
+
+        };
+        $(".navbar-nav .nav-link[data-chatbot='chatbot1']").addClass("active").trigger("click");
+
+        $(".navbar-nav .nav-link").click(function () {
+          activeChatbot = $(this).data("chatbot");
+          apiUrl = `/api/${activeChatbot}`;
+          $(".navbar-nav .nav-link").removeClass("active");
+          $(this).addClass("active");
+          loadChatHistory(activeChatbot);
+        });
 
         $("#send-button").click(function () {
           sendMessage();
@@ -72,39 +98,50 @@
             return;
           }
 
-          appendMessage(message, "user", userLogo);
+          appendMessage(message, "user");
+          chatHistories[activeChatbot].push({ type: "user", text: message });
 
           $.ajax({
-            url: "/api",
+            url: apiUrl,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify({ message: message }),
             success: function (response) {
-              appendMessage(response, "response", systemLogo);
+              appendMessage(response, "response");
+              chatHistories[activeChatbot].push({ type: "response", text: response });
             },
             error: function () {
-              appendMessage(
-                "Error: Failed to send the message.",
-                "response",
-                systemLogo
-              );
+              const errorMsg = "Error: Failed to send the message.";
+              appendMessage(errorMsg, "response");
+              chatHistories[activeChatbot].push({ type: "response", text: errorMsg });
             },
           });
 
           $("#message-input").val("");
         }
 
-        function appendMessage(text, type, logo) {
+        function appendMessage(text, type) {
+          const logo =
+            type === "user"
+              ? "{{ url_for('static', filename='images/user.png') }}"
+              : "{{ url_for('static', filename='images/gpt.jpg') }}";
           const messageHtml = `
-    <div class="message ${type}">
-      <img src="${logo}" alt="${type} logo" class="logo" />
-      <div class="message-content">${text}</div>
-    </div>
-  `;
-
+            <div class="message ${type}">
+              <img src="${logo}" alt="${type} logo" class="logo" />
+              <div class="message-content">${text}</div>
+            </div>`;
           $("#chat-container").append(messageHtml);
           $("#chat-container").scrollTop($("#chat-container")[0].scrollHeight);
         }
+
+        function loadChatHistory(chatbot) {
+          $("#chat-container").empty();
+          chatHistories[chatbot].forEach((msg) => {
+            appendMessage(msg.text, msg.type);
+          });
+        }
+
+        loadChatHistory(activeChatbot);
       });
     </script>
   </body>
