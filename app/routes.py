@@ -48,10 +48,10 @@ class InMemoryHistory(BaseChatMessageHistory,BaseModel):
         self.messages = []
 
 
-
 @main.route("/")
 def index():
     return render_template("./index.html")
+    
 
 @main.route("/api/<chatbot_id>", methods=["POST"])
 def api(chatbot_id):
@@ -64,7 +64,7 @@ def api(chatbot_id):
         ("system", "You're an assistant who's good at answering questions."),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{question}"),
-    ])
+        ])
         chain = prompt | llm
         
         chain_with_history = RunnableWithMessageHistory(
@@ -75,6 +75,7 @@ def api(chatbot_id):
         )
 
         history = get_by_session_id(chatbot_id)
+        print(history)
         inputs = {
         "question": question
          }
@@ -86,28 +87,41 @@ def api(chatbot_id):
 
     if chatbot_id == 'chatbot2':
         # Use the conversation chain to get a response
-        memory = ConversationBufferMemory()
-
-        conversation_chain = ConversationChain(
-            llm=llm,
-            verbose=True,
-            memory=memory
-            )
-        response_content = conversation_chain.predict(input=question)
+        history = get_by_session_id(chatbot_id)
         
-        # Save message and response to the database
-        new_message = ChatMessage(question=question, response=response_content)
+        prompt = ChatPromptTemplate.from_messages([
+        ("system", "You're an assistant who's good at answering questions."),
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "{question}"),
+        ])
+        chain = prompt | llm
+        chain_with_history = RunnableWithMessageHistory(
+        chain,
+        get_by_session_id,
+        input_messages_key="question",
+        history_messages_key="history",
+        )
+
+        print(history)
+        inputs = {
+        "question": question
+        }
+    
+        response_content = chain_with_history.invoke(
+        inputs,
+        config={"configurable": {"session_id": chatbot_id}}
+        )
+        
+        new_message = ChatMessage(question=question, response=response_content.content)
         alchemy_db.session.add(new_message)
         alchemy_db.session.commit()
-        
-        # Update memory with the new question and response
-        memory.save_context({"question": question}, {"response": response_content})
-        return response_content
+
+        return response_content.content
     
     if chatbot_id == 'chatbot3':
-        memory = ConversationBufferMemory()
-        
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.5, api_key=os.environ.get("OPENAI_API_KEY"))
+        # memory = ConversationBufferMemory()
+        history = get_by_session_id(chatbot_id) 
+
         generate_query = create_sql_query_chain(llm, mysql_db)
         # print(query)
         execute_query = QuerySQLDataBaseTool(db=mysql_db)
@@ -126,12 +140,26 @@ def api(chatbot_id):
             RunnablePassthrough.assign(query=generate_query).assign(
             result=itemgetter("query") | execute_query
             ) | rephrase_answer )
-        result   = chain.invoke({"question": question,"history":memory.buffer})
         
-        memory.save_context({"question":question},{"result":result}) 
-        
+        chain_with_history = RunnableWithMessageHistory(
+        chain,
+        get_by_session_id,
+        input_messages_key="question",
+        history_messages_key="history",
+        )
 
-        return result 
+        print(history)
+        inputs = {
+        "question": question
+        }
+     
+
+        response_content = chain_with_history.invoke(
+        inputs,
+        config={"configurable": {"session_id": chatbot_id}}
+        )
+        
+        return response_content
     
     else:
         return "Failed to Generate response!"
