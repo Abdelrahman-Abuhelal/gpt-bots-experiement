@@ -23,6 +23,9 @@ from typing import Dict, Any,List
 from langchain_core.pydantic_v1 import BaseModel,Field
 #from pydantic import BaseModel, Field
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 main = Blueprint("main", __name__)
 
@@ -72,6 +75,11 @@ def index():
 def api(chatbot_id):
     """Main API handler for chatbot requests."""
     question = request.json.get("message")
+    print(f"Question is: {question}")
+
+    if not question:
+        return jsonify({"error": "Message is required"}), 400
+    
     llm = create_chat_model()
 
     if chatbot_id == 'chatbot1':
@@ -81,7 +89,9 @@ def api(chatbot_id):
     elif chatbot_id == 'chatbot3':
         return jsonify(process_chatbot3(llm, question, chatbot_id))
     else:
-        return jsonify({"error": "Failed to generate response!"})
+        return jsonify({"error": "Invalid chatbot ID"}), 404
+
+    return jsonify(response)
 
 
 # Function to process chatbot1 interaction
@@ -105,12 +115,12 @@ def process_chatbot2(llm: ChatOpenAI, question: str, chatbot_id: str) -> Dict[st
     inputs = {"question": question}
     response_content = chain_with_history.invoke(inputs, config={"configurable": {"session_id": chatbot_id}})
     
-    # Example of storing message in DB (pseudo-code)
+    # Storing message in DB 
     new_message = ChatMessage(question=question, response=response_content.content)
     alchemy_db.session.add(new_message)
     alchemy_db.session.commit()
 
-    return {"response": response_content.content}
+    return {"response": response_content}
 
 # Function to process chatbot3 interaction
 def process_chatbot3(llm: ChatOpenAI, question: str, chatbot_id: str) -> Dict[str, Any]:
@@ -140,7 +150,7 @@ def process_chatbot3(llm: ChatOpenAI, question: str, chatbot_id: str) -> Dict[st
     inputs = {"question": question}
     response_content = chain_with_history.invoke(inputs, config={"configurable": {"session_id": chatbot_id}})
 
-    return {"response": response_content.content}
+    return {"response": response_content}
 
 # Helper to create a chain with history
 def create_chain_with_history(chain, session_id: str):
