@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(message);
     appendMessage(message, "user");
     chatHistories[activeChatbot].push({ type: "user", text: message });
+    document.getElementById("message-input").value = "";
 
     try {
       const response = await fetch(apiUrl, {
@@ -87,7 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    document.getElementById("message-input").value = "";
   }
 
   function appendMessage(text, type) {
@@ -98,6 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <img src="${logo}" alt="${type} logo" class="logo" />
           <div class="message-content">${text}</div>
         </div>`;
+
     document
       .getElementById("chat-container")
       .insertAdjacentHTML("beforeend", messageHtml);
