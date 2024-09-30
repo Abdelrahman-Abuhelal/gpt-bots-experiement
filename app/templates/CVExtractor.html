@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document Upload</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='extractor.css') }}"
+    />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <h1 class="navbar-title">CV Extractor</h1>
+      <button class="home-button" onclick="navigateHome()">
+        Return to Home
+      </button>
+    </nav>
+
+    <div class="upload-container">
+      <h2>Upload Your Document</h2>
+
+      <div class="upload-box">
+        <input
+          type="file"
+          id="cv-file"
+          name="cv"
+          accept=".pdf,.doc,.docx"
+          required
+        />
+        <label for="cv-file">
+          <span>Choose a PDF or Word document</span>
+        </label>
+        <p id="file-name">No file selected</p>
+      </div>
+
+      <button type="button" id="upload-button" class="upload-btn">
+        Upload
+      </button>
+      <p id="upload-status"></p>
+    </div>
+
+    <div class="data-display-container">
+      <div id="extracted-data" class="extracted-data-container">
+        <h3>Extracted Data</h3>
+        <pre id="extracted-data-text"></pre>
+      </div>
+
+      <div id="ai-answer" class="answer-container">
+        <h3>AI Generated Answer</h3>
+        <pre id="answer-text"></pre>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='extractor.js') }}"></script>
+
+    <!-- JavaScript for Navigation -->
+    <script>
+      function navigateHome() {
+        window.location.href = "{{ url_for('chatbot.index') }}";
+      }
+    </script>
+  </body>
+</html>
