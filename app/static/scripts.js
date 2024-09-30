@@ -12,20 +12,24 @@ document.addEventListener("DOMContentLoaded", function () {
     .querySelector(".navbar-nav .nav-link[data-chatbot='chatbot1']")
     .classList.add("active");
 
-  // Handle navbar click and load chat history
   document.querySelectorAll(".navbar-nav .nav-link").forEach((item) => {
     item.addEventListener("click", function (e) {
-      e.preventDefault();
-      activeChatbot = this.getAttribute("data-chatbot");
-      apiUrl = `/api/${activeChatbot}`;
-      document
-        .querySelectorAll(".navbar-nav .nav-link")
-        .forEach((el) => el.classList.remove("active"));
-      this.classList.add("active");
-      loadChatHistory(activeChatbot);
+      const chatbotType = this.getAttribute("data-chatbot");
+      if (chatbotType === "cv-extractor-page") {
+        // Navigate to the CV Extractor page
+        window.location.href = "/cv-extractor-page";
+      } else {
+        e.preventDefault();
+        activeChatbot = chatbotType;
+        apiUrl = `/api/${activeChatbot}`;
+        document
+          .querySelectorAll(".navbar-nav .nav-link")
+          .forEach((el) => el.classList.remove("active"));
+        this.classList.add("active");
+        loadChatHistory(activeChatbot);
+      }
     });
   });
-
   // Add event listener for sending message
   const sendMessageDebounced = debounce(sendMessage, 300);
 
@@ -87,11 +91,10 @@ document.addEventListener("DOMContentLoaded", function () {
         text: "Error: Failed to send the message.",
       });
     }
-
   }
 
   function appendMessage(text, type) {
-  const logo = type === "user" ? userImage : botImage;
+    const logo = type === "user" ? userImage : botImage;
 
     const messageHtml = `
         <div class="message ${type}">
