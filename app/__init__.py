@@ -24,9 +24,11 @@ def create_app():
     # Import and register blueprints for chatbot and CV extractor routes
     from .routes.chatbot_routes import main as chatbot_routes
     from .routes.cv_extractor_routes import main as cv_extractor_routes
+    from .routes.web_scraper_routes import main as web_scraper_routes
 
     app.register_blueprint(chatbot_routes)
     app.register_blueprint(cv_extractor_routes)
+    app.register_blueprint(web_scraper_routes)
 
     with app.app_context():
         db.create_all()

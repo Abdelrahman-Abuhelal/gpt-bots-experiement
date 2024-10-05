@@ -7,17 +7,19 @@ document.addEventListener("DOMContentLoaded", function () {
     chatbot3: [],
   };
 
-  // Set default active chatbot
   document
     .querySelector(".navbar-nav .nav-link[data-chatbot='chatbot1']")
     .classList.add("active");
 
   document.querySelectorAll(".navbar-nav .nav-link").forEach((item) => {
     item.addEventListener("click", function (e) {
+      const aiServiceType = this.getAttribute("data-ai-services");
       const chatbotType = this.getAttribute("data-chatbot");
-      if (chatbotType === "cv-extractor-page") {
+      if (aiServiceType === "cv-extractor-page") {
         // Navigate to the CV Extractor page
         window.location.href = "/cv-extractor-page";
+      } else if (aiServiceType == "web-scraper-page") {
+        window.location.href = "/web-scraper-page";
       } else {
         e.preventDefault();
         activeChatbot = chatbotType;

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Website Summary Scraper</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='scraper.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Website Summary Scraper</h1>
+      <form id="scraperForm" method="POST">
+        <label for="url">Enter the Website URL:</label>
+        <input
+          type="url"
+          id="url"
+          name="url"
+          placeholder="https://example.com"
+          required
+        />
+        <button type="submit">Scrape</button>
+      </form>
+      <div id="results" class="results-container">
+        <h2>Summary Results</h2>
+        <div id="resultContent"></div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("scraperForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const url = document.getElementById("url").value;
+
+          try {
+            const response = await fetch("/web-scraper", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ url: url }),
+            });
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(
+                `Failed to scrape the website. Status: ${response.status}, Details: ${errorText}`
+              );
+            }
+
+            const result = await response.json();
+            const resultContent = document.getElementById("resultContent");
+
+            if (result.error) {
+              resultContent.innerHTML = `<p class="error">Error: ${result.error}</p>`;
+            } else {
+              resultContent.innerHTML = `<p>Scraped data: ${result.answer}</p>`;
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            document.getElementById(
+              "resultContent"
+            ).innerHTML = `<p class="error">An error occurred while scraping: ${error.message}</p>`;
+          }
+        });
+    </script>
+  </body>
+</html>
