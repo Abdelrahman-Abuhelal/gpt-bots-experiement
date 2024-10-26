@@ -28,7 +28,7 @@ def create_completion(client, cleaned_text, delimiter="####"):
             messages=[
                 {
                     "role": "system",
-                    "content": f"{delimiter} Summarize what the extracted website text is talking about:\n ",
+                    "content": f"{delimiter} Summarize what the extracted website text is talking about in less than 10 points each one in line :\n ",
                 },
                 {"role": "user", "content": cleaned_text},
             ],
@@ -45,10 +45,8 @@ def handle_web_scraping(url):
         return {"error": cleaned_text}, 400
     elif cleaned_text == "Failed to fetch website content.":
         return {"error": "Failed to fetch website content"}, 400
-    print("HHHHHHHHHHHH")
     client = openai.OpenAI()
     response, error = create_completion(client, cleaned_text, delimiter="####")
-    print("222222")
 
     if error:
         return {"error": f"LLM processing error: {error}"}, 500
