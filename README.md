@@ -8,11 +8,6 @@
 
 - [Features](#features)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Chatbots](#chatbots)
-- [CV Extractor](#cv-extractor)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
@@ -20,8 +15,10 @@
   - **Basic Chatbot:** A simple conversational agent with memory and history tracking for unique sessions.
   - **SQLite Chatbot:** Similar to the basic chatbot, but it stores conversation history in an SQLite database.
   - **Database Query Chatbot:** Connects to a database to answer user questions and retrieve information using SQL commands.
+  - **Quiz Chatbot:** A chatbot that quizzes users on specific topics, evaluates responses, and provides detailed feedback to aid learning and comprehension.
   
 - **CV Extractor:** Extracts information from PDF or Word files, highlighting essential details for viewers. Utilizes Optical Character Recognition (OCR) for unextracted data from PDFs.
+- **Website Summarizer:** A tool designed to scrape data from blogs or websites and summarize their content, providing users with a concise overview of the site's topic.
 
 ## Installation
 
