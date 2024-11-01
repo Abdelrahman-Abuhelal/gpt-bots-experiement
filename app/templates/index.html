@@ -60,11 +60,30 @@
                 </a>
                 
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="quiz-chat-link" data-chatbot="chatbot4">
+                <img style="width: 25px; height: 25px;" src="{{url_for('static', filename='images/exam-bot.png')}}" alt="exam_chatbot" class="icon"> 
+
+                Quiz Chat</a>
+            </li>
           </ul>
         </div>
       </nav>
-
+      
       <div class="chat-container" id="chat-container"></div>
+
+      <div class="form-group" id="topic-selection" style="display: none;">
+        <label for="topic-select">Select a Topic for the Quiz:</label>
+        <select id="topic-select" class="form-control">
+          <option value="" disabled selected>Select a topic</option>
+          <option value="Operating Systems">Operating Systems</option>
+          <option value="Object Oriented Programming">Object Oriented Programming</option>
+          <option value="Database Systems">Database Systems</option>
+          <option value="Compiler Design">Compiler Design</option>
+          <!-- Add more topics as needed -->
+        </select>
+      </div>
+
       <div class="input-container">
         <input
           type="text"
@@ -92,5 +111,24 @@
       const userImage = "{{ url_for('static', filename='images/user.png') }}";
       const botImage = "{{ url_for('static', filename='images/gpt.jpg') }}";
     </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const quizChatLink = document.getElementById("quiz-chat-link");
+    const topicSelection = document.getElementById("topic-selection");
+
+    quizChatLink.addEventListener("click", function () {
+      topicSelection.style.display = "block";
+    });
+
+    document.querySelectorAll("[data-chatbot]").forEach((link) => {
+      link.addEventListener("click", function () {
+        if (link !== quizChatLink) {
+          topicSelection.style.display = "none";
+        }
+      });
+    });
+  });
+</script>
   </body>
 </html>

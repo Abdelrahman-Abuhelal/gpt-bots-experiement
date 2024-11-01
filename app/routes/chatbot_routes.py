@@ -5,6 +5,7 @@ from ..services.chatbot_service import (
     process_chatbot1,
     process_chatbot2,
     process_chatbot3,
+    process_chatbot4,
     create_chat_model,
 )
 
@@ -17,10 +18,10 @@ def index():
 
 
 @main.route("/api/<chatbot_id>", methods=["POST"])
-def chatbot_api(chatbot_id):
+def chatbot_api(chatbot_id,topic=None):
     """Main API handler for chatbot requests."""
     question = request.json.get("message")
-
+    topic = request.json.get("topic") 
     if not question:
         return jsonify({"error": "Message is required"}), 400
 
@@ -32,5 +33,7 @@ def chatbot_api(chatbot_id):
         return jsonify(process_chatbot2(llm, question, chatbot_id))
     elif chatbot_id == "chatbot3":
         return jsonify(process_chatbot3(llm, question, chatbot_id))
+    elif chatbot_id == "chatbot4":
+        return jsonify(process_chatbot4(llm, question,topic, chatbot_id))
     else:
         return jsonify({"error": "Invalid chatbot ID"}), 404

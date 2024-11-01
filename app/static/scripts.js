@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     chatbot1: [],
     chatbot2: [],
     chatbot3: [],
+    chatbot4: [],
   };
 
   document
@@ -60,18 +61,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function sendMessage() {
     const message = document.getElementById("message-input").value.trim();
+    const selectedTopic = document.getElementById("topic-select").value;
     if (message === "") return;
+    
+    const requestBody = { 
+      message: message 
+    };
 
+    if (activeChatbot === "chatbot4" && selectedTopic) {
+      requestBody.topic = selectedTopic; 
+    }
+  
     console.log(message);
     appendMessage(message, "user");
     chatHistories[activeChatbot].push({ type: "user", text: message });
     document.getElementById("message-input").value = "";
 
     try {
+      console.log(apiUrl);
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: message }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {

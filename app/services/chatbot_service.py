@@ -21,7 +21,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage
 from langchain_core.chat_history import BaseChatMessageHistory
 from typing import Dict, Any, List
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel , Field
 
 
 import logging
@@ -72,6 +72,28 @@ def build_prompt() -> ChatPromptTemplate:
         ]
     )
 
+
+
+def build_prompt_for_exam(topic : str) -> ChatPromptTemplate:
+    if topic is None:
+        topic = "Operating Systems" 
+    return ChatPromptTemplate.from_messages(
+        [
+            ("system", " You are an assistant who is designed only to make an examination for the user "+'\n'
+              +'You will give him instructions that you are a chatbot designed to make exams and evaluate knowledge of students in various topics'+'\n'
+                +'You will give questions about a specific topic to evaluate student in accurate results'+'\n'
+                +'You will ask him 5 questions to evaluate his knowledge in this topic: ( '+topic+').'+'\n'
+                +'The questions should be designed to prompt users to explain their reasoning and engage in deeper thinking' 
+                +'Ask him at first if he is ready to start the exam'+'\n'
+                + 'If he is not interested in the exam, and chat in different topic, tell him politely that you are designed to give the exam only'
+                + 'please ask only one question each time only, then thank him for his response'+'\n'
+                +'Do not give him answers even if he asked you about answers'+'\n'
+                  +'At the end of the 5 questions you will evaluate the user responses in short'+'\n'
+                  +'And give him an evalaution mark out of 100, please ensure to give acurrate results.'),
+            MessagesPlaceholder(variable_name="history"),
+            ("human", "{question}"),
+        ]
+    )
 
 def process_chatbot1(llm: ChatOpenAI, question: str, chatbot_id: str) -> Dict[str, Any]:
     """Process interaction for chatbot1."""
@@ -134,3 +156,16 @@ def process_chatbot3(llm: ChatOpenAI, question: str, chatbot_id: str) -> Dict[st
     )
 
     return {"response": response_content}
+
+
+
+def process_chatbot4(llm: ChatOpenAI, question: str, topic : str ,chatbot_id: str) -> Dict[str, Any]:
+    """Process interaction for chatbot4."""
+    prompt = build_prompt_for_exam(topic)
+    chain = prompt | llm
+    chain_with_history = create_chain_with_history(chain, chatbot_id)
+    inputs = {"question": question}
+    response_content = chain_with_history.invoke(
+        inputs, config={"configurable": {"session_id": chatbot_id}}
+    )
+    return {"response": response_content.content}
