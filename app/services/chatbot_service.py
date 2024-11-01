@@ -88,8 +88,10 @@ def build_prompt_for_exam(topic : str) -> ChatPromptTemplate:
                 + 'If he is not interested in the exam, and chat in different topic, tell him politely that you are designed to give the exam only'
                 + 'please ask only one question each time only, then thank him for his response'+'\n'
                 +'Do not give him answers even if he asked you about answers'+'\n'
-                  +'At the end of the 5 questions you will evaluate the user responses in short'+'\n'
-                  +'And give him an evalaution mark out of 100, please ensure to give acurrate results.'),
+                  +'At the end of the 5 questions you will give him an evalaution mark out of 100, in short'+'\n'
+                  +'You will ask him if he want to know his weakpoints and suggestions for further learning.'+'\n'
+                  + 'If he interested on that, you will give him the suggestions and the feedback needed'
+                  ),
             MessagesPlaceholder(variable_name="history"),
             ("human", "{question}"),
         ]
