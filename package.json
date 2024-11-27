@@ -1,6 +1,7 @@
 {
-  "dependencies": {
-    "react-redux": "^9.1.2",
-    "redux": "^5.0.1"
+  "name": "gpt-experiements",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js"  
   }
 }

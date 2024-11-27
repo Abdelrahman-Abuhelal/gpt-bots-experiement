@@ -75,8 +75,6 @@ def build_prompt() -> ChatPromptTemplate:
 
 
 def build_prompt_for_exam(topic : str) -> ChatPromptTemplate:
-    if topic is None:
-        topic = "Operating Systems" 
     return ChatPromptTemplate.from_messages(
         [
             ("system", " You are an assistant who is designed only to make an examination for the user "+'\n'
