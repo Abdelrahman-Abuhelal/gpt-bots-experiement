@@ -20,6 +20,8 @@
 - **CV Extractor:** Extracts information from PDF or Word files, highlighting essential details for viewers. Utilizes Optical Character Recognition (OCR) for unextracted data from PDFs.
 - **Website Summarizer:** A tool designed to scrape data from blogs or websites and summarize their content, providing users with a concise overview of the site's topic.
 
+![image](https://github.com/user-attachments/assets/72b73f28-d169-4ec8-99fb-129bb5daf3ad)
+
 ## Installation
 
 1. Clone the repository:
