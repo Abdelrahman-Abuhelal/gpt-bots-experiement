@@ -2,7 +2,7 @@
 
 ## Overview
 
-**GPT Experiments** is a Flask-based project that I work on in my free time to develop my skills in working with LLMs (Large Language Models) and Generative AI. This project explores various implementations of chatbots using OpenAI's API, alongside a CV extractor for processing document files. It currently features three distinct chatbots, each with unique functionalities, and a tool for extracting information from CVs in PDF or Word formats.
+**GPT Experiments** is a Flask-based project showcasing my expertise in LLMs (Large Language Models) and Generative AI. Designed with a focus on practical applications, this project integrates advanced AI-driven solutions for diverse use cases, such as implementations of chatbots using OpenAI's API, alongside a CV extractor for processing document files. It currently features four distinct chatbots, each with unique functionalities, also a tool for extracting information from CVs in PDF or Word formats and tool to summarize any website article.
 
 ## Table of Contents
 
@@ -11,7 +11,7 @@
 
 ## Features
 
-- Three chatbots with different capabilities:
+- Four chatbots with different capabilities:
   - **Basic Chatbot:** A simple conversational agent with memory and history tracking for unique sessions.
   - **SQLite Chatbot:** Similar to the basic chatbot, but it stores conversation history in an SQLite database.
   - **Database Query Chatbot:** Connects to a database to answer user questions and retrieve information using SQL commands.
